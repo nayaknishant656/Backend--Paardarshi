@@ -17,6 +17,9 @@ app.get('/blog', (req, res) => {
 })
 app.get('/shoes', async (req, res) => {
     try {
+        res.setHeader('Access-Control-Allow-Origin', '*'); /* @dev First, read about security */
+        res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+        res.setHeader('Access-Control-Max-Age', 2592000); // 30 days
         const page = parseInt(req.query.page) - 1 || 0;
         const limit = parseInt(req.query.limit) || 20;
         const search = req.query.search || "";
@@ -87,4 +90,7 @@ app.delete('/shoes/:id', async (req, res) => {
 })
 app.listen(PORT, () => {
     console.log('Server is listenin on PORT :' + PORT);
+    res.setHeader('Access-Control-Allow-Origin', '*'); /* @dev First, read about security */
+    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+    res.setHeader('Access-Control-Max-Age', 2592000); // 30 days
 })
