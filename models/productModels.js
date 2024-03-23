@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-
 const productSchema = mongoose.Schema(
     {
         si: {type: String, required: true},
@@ -15,5 +14,4 @@ const productSchema = mongoose.Schema(
 );
 
 const Product = mongoose.model('shoes', productSchema);
-
 export default Product;
