@@ -43,6 +43,63 @@ app.get('/shoes', async (req, res) => {
         res.status(500).json({ message: error.message })
     }
 })
+app.get('/durgapj', async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) - 1 || 0;
+        const limit = parseInt(req.query.limit) || 30;
+        const search = req.query.search || "";
+        let sort = req.query.sort || "amount";
+        let genre = req.query.genre || "All";
+
+        const genreOptions = [
+            "Action",
+            "Romance",
+            "Fantasy",
+            "Drama",
+            "Crime",
+            "Adventure",
+            "Thriller",
+            "Sci-fi",
+            "Music",
+            "Family",
+        ];
+
+        genre === "All"
+            ? (genre = [...genreOptions])
+            : (genre = req.query.genre.split(","));
+        req.query.sort ? (sort = req.query.sort.split(",")) : (sort = [sort]);
+
+        let sortBy = {};
+        if (sort[1]) {
+            sortBy[sort[0]] = sort[1];
+        } else {
+            sortBy[sort[0]] = "asc";
+        }
+        // const products = await Product.find({});
+        // res.status(200).json(products);
+        const products = await Product.find({ name: { $regex: search} })
+            // .where("genre")
+            // .in([...genre])
+            .sort(sortBy)
+            .skip(page * limit)
+            .limit(limit);
+
+        const total = await Product.countDocuments({
+            name: { $regex: search},
+        });
+
+        const response = {
+            error: false,
+            total,
+            page: page + 1,
+            limit,
+            products,
+        };
+        res.status(200).json(response);
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
 app.get('/shoes/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -92,7 +149,4 @@ app.delete('/shoes/:id', async (req, res) => {
 })
 app.listen(PORT, () => {
     console.log('Server is listenin on PORT :' + PORT);
-    res.setHeader('Access-Control-Allow-Origin', '*'); /* @dev First, read about security */
-    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
-    res.setHeader('Access-Control-Max-Age', 2592000); // 30 days
 })
